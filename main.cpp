@@ -16,7 +16,8 @@ void main_module()
    alist->Add(fdif);
    myClass obj1(alist);
    obj1.Draw();
-   for (int i = 0; i < 3; ++i) {
+   for (int i = 0; i < 3; ++i)
+   {
 
       TH1F *h = new TH1F("h", "Histo", 100, fdif->GetParameter(1) - 0.03, fdif->GetParameter(1) + 0.03);
       h->SetFillColor(kBlue);
@@ -31,6 +32,7 @@ void main_module()
    obj1.set_list(alist);
    obj1.set_nGen(1E6);
    TGraphErrors *graph = new TGraphErrors();
+   // settare il nome al grafico per poterci accedere nella classe
    alist->Add(graph);
    obj1.set_samplingStep(0.0006);
    obj1.set_ySmearing(1);
