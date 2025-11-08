@@ -10,23 +10,17 @@ double MyFunction(double *x, double *par)
 
 void main_module()
 {
-   TF1 *fdif = new TF1("Fdif", MyFunction, -M_PI, M_PI, 5);
+   TF1 *fdif = new TF1("Fdif", MyFunction, 0.057 - 0.03, 0.057 + 0.03, 5);
    fdif->SetParameters(0.0001, 0.057, 1, 632.8E-9, 500);
    TList *alist = new TList();
    alist->Add(fdif);
    myClass obj1(alist);
    obj1.Draw();
+   TString names[3] = {"1", "2", "3"};
    for (int i = 0; i < 3; ++i)
    {
-
-      TH1F *h = new TH1F("h", "Histo", 100, fdif->GetParameter(1) - 0.03, fdif->GetParameter(1) + 0.03);
+      TH1F *h = new TH1F("h" + names[i], "Histo " + names[i], 100, 0.057 - 0.03, 0.057 + 0.03);
       h->SetFillColor(kBlue);
-      h->GetXaxis()->SetTitle("x");
-      h->GetYaxis()->SetTitle("Entries");
-      h->GetXaxis()->SetTitleSize(1.2);
-      h->GetYaxis()->SetTitleSize(1.2);
-      h->GetXaxis()->SetTitleOffset(1.2);
-      h->GetYaxis()->SetTitleOffset(1.2);
       alist->Add(h);
    }
    obj1.set_list(alist);

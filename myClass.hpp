@@ -25,10 +25,10 @@ public:
 
    void set_list(TList *);
    void set_nGen(int);
-   void set_nToys(const int);
-   void set_samplingStep(const double);
-   void set_ySmearing(const double);
-   void set_yError(const double);
+   void set_nToys(int);
+   void set_samplingStep(double);
+   void set_ySmearing(double);
+   void set_yError(double);
 
    void Generate();
    void Draw();
