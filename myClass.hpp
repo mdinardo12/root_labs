@@ -9,6 +9,9 @@
 #include <TString.h>
 #include <TBenchmark.h>
 #include <TGraphErrors.h>
+#include<TMatrixD.h>
+#include<TFitResult.h>
+#include<TFitResultPtr.h>
 
 class myClass
 {
