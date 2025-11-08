@@ -24,19 +24,19 @@ void myClass::set_list(TList *l)
 {
    objList_ = l;
 }
-void myClass::set_nGen(int n)
+void myClass::set_nGen(const int n)
 {
    nGen_ = n;
 }
-void myClass::set_nToys(int n)
+void myClass::set_nToys(const int n)
 {
    nToys_ = n;
 }
-void myClass::set_samplingStep(double s)
+void myClass::set_samplingStep(const double s)
 {
    samplingStep_ = s;
 }
-void myClass::set_ySmearing(double s)
+void myClass::set_ySmearing(const double s)
 {
    ySmearing_ = s;
 }
