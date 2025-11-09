@@ -1,44 +1,35 @@
 #ifndef MYCLASS_HPP
 #define MYCLASS_HPP
 
-#include <TBenchmark.h>
-#include <TCanvas.h>
-#include <TF1.h>
-#include <TFitResult.h>
-#include <TFitResultPtr.h>
-#include <TGraphErrors.h>
-#include <TH1.h>
 #include <TList.h>
-#include <TMatrixD.h>
-#include <TRandom.h>
-#include <TString.h>
-#include<TStyle.h>
-#include<TROOT.h>
 
 class myClass {
  public:
-  myClass(TList *l) { objList_ = l; }
+  myClass() { objList_ = new TList(); }  // default constructor
+  myClass(TList *l) { objList_ = l; }    // parametric constructor
 
-  TList *getList() const;
-  int get_nGen() const;
-  int get_nToys() const;
-  double get_samplingStep() const;
-  double get_ySmearing() const;
-  double get_yError() const;
-  void set_list(TList *l);
-  void set_nGen(int n);
-  void set_nToys(int n);
-  void set_samplingStep(double s);
-  void set_ySmearing(double s);
-  void set_yError(double ey);
+  inline TList *get_List() const { return objList_; }
+  inline int get_nGen() const { return nGen_; }
+  inline int get_nToys() const { return nToys_; }
+  inline double get_samplingStep() const { return samplingStep_; }
+  inline double get_ySmearing() const { return ySmearing_; }
+  inline double get_yError() const { return yError_; }
+  inline void set_List(TList *l) { objList_ = l; }
+  inline void set_nGen(int n) { nGen_ = n; }
+  inline void set_nToys(int n) { nToys_ = n; }
+  inline void set_samplingStep(double s) { samplingStep_ = s; }
+  inline void set_ySmearing(double s) { ySmearing_ = s; }
+  inline void set_yError(double ey) { yError_ = ey; }
 
   void Generate();
   void Draw();
-  void Analyze();
+  void Analyse();
+
+  ~myClass();  // destructor
 
  private:
   TList *objList_;
-  int nGen_;
+  int nGen_ = 1E6;
   int nToys_;
   double samplingStep_;
   double ySmearing_;
