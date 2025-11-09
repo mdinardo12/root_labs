@@ -2,6 +2,12 @@
 
 #include "myClass.hpp"
 
+void setStyle() {
+  gROOT->SetStyle("Plain");
+  gStyle->SetPalette(57);
+  gStyle->SetOptTitle(0);
+}
+
 double MyFunction(double *x, double *par) {
   double xx = x[0];
   double a =
@@ -18,12 +24,18 @@ void main_module() {
   alist->Add(fdif);
   myClass obj1(alist);
   TString names[3] = {"1", "2", "3"};
-  for (int i = 0; i < 3; ++i) {
-    TH1F *h = new TH1F("h" + names[i], "Histo " + names[i], 100, 0.057 - 0.03,
-                       0.057 + 0.03);
-    h->SetFillColor(kBlue);
-    alist->Add(h);
+  int nbins{100};
+  TH1F *h[3];
+  for (int i{}; i < 3; ++i) {
+    h[i] = new TH1F("h" + names[i], "Histo " + names[i], nbins, 0.057 - 0.03,
+                    0.057 + 0.03);
+    h[i]->SetFillColor(kBlue);
+    alist->Add(h[i]);
   }
+
+  /*h[0]->SetFillColor(kBlue);
+  h[1]->SetFillColor(kRed);*/
+
   obj1.set_list(alist);
   obj1.set_nGen(1E6);
   TGraphErrors *graph = new TGraphErrors();
