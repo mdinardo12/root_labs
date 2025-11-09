@@ -52,7 +52,16 @@ void main_module() {
   fitFunction->FixParameter(2, 1);
   alist->Add(fitFunction);
   obj1.set_yError(1);
+  obj1.set_nToys(100);
+  TH1F *histo[3];
+  TString name[3] = {"1", "3", "4"};
+  for (int i{}; i < 3; ++i) {
+    histo[i] = new TH1F("par" + name[i], "Pull " + name[i], nbins, 0.057 - 0.03,
+                        0.057 + 0.03);
+    histo[i]->SetFillColor(kBlue);
+    alist->Add(histo[i]);
+  }
   obj1.Generate();
-  obj1.Analyze();
+  // obj1.Analyze();
   obj1.Draw();
 }

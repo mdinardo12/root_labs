@@ -12,6 +12,8 @@
 #include <TMatrixD.h>
 #include <TRandom.h>
 #include <TString.h>
+#include<TStyle.h>
+#include<TROOT.h>
 
 class myClass {
  public:
