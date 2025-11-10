@@ -21,7 +21,7 @@ void myClass::Generate() {
   gBenchmark->Stop("TH1::FillRandom");
   gBenchmark->Show("TH1::FillRandom");
 
-  // secondo istogramma lista [2]
+  // secondo istogramma lista[2]
   TF1 *f = static_cast<TF1 *>(objList_->At(0));
   TH1F *h2 = static_cast<TH1F *>(objList_->At(2));
   gBenchmark->Start("TF1::GetRandom");
@@ -60,7 +60,7 @@ void myClass::Generate() {
   // costruzione toyMC lista [6][7][8]
   for (int i{}; i < nToys_; ++i) {
     g->Set(0);
-    for (int j = 0; j < 100; ++j) {
+    for (int j{}; j < 100; ++j) {
       auto x = gRandom->Uniform(f->GetParameter(1) - 0.03,
                                 f->GetParameter(1) + 0.03);
       // g->SetPoint(j, x, f->Eval(x));  // perché no rumore statistico (error)?
@@ -77,12 +77,11 @@ void myClass::Generate() {
     h[0] = static_cast<TH1F *>(objList_->At(6));
     h[1] = static_cast<TH1F *>(objList_->At(7));
     h[2] = static_cast<TH1F *>(objList_->At(8));
-    double pull_1 =
+    auto pull_1 =
         (funcFit->GetParameter(1) - 0.057) / (funcFit->GetParError(1));
-    double pull_3 =
+    auto pull_3 =
         (funcFit->GetParameter(3) - 632.8E-9) / (funcFit->GetParError(3));
-    double pull_4 =
-        (funcFit->GetParameter(4) - 500) / (funcFit->GetParError(4));
+    auto pull_4 = (funcFit->GetParameter(4) - 500) / (funcFit->GetParError(4));
     h[0]->Fill(pull_1);
     h[1]->Fill(pull_3);
     h[2]->Fill(pull_4);
