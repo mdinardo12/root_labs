@@ -14,12 +14,14 @@
 #include <iostream>
 
 void myClass::Generate() {
+  // primo istogramma lista[1]
   TH1F *h1 = static_cast<TH1F *>(objList_->At(1));
   gBenchmark->Start("TH1::FillRandom");
   h1->FillRandom(objList_->At(0)->GetName(), nGen_);
   gBenchmark->Stop("TH1::FillRandom");
   gBenchmark->Show("TH1::FillRandom");
 
+  // secondo istogramma lista [2]
   TF1 *f = static_cast<TF1 *>(objList_->At(0));
   TH1F *h2 = static_cast<TH1F *>(objList_->At(2));
   gBenchmark->Start("TF1::GetRandom");
@@ -29,6 +31,7 @@ void myClass::Generate() {
   gBenchmark->Stop("TF1::GetRandom");
   gBenchmark->Show("TF1::GetRandom");
 
+  // terza istogramma lista[3]
   TH1F *h3 = static_cast<TH1F *>(objList_->At(3));
   int points{};
   auto fmax = f->GetMaximum(f->GetXmin(), f->GetXmax());
@@ -44,25 +47,36 @@ void myClass::Generate() {
   gBenchmark->Stop("Hit or Miss");
   gBenchmark->Show("Hit or Miss");
 
+  // grapherrors lista[4]
   TGraphErrors *g = static_cast<TGraphErrors *>(objList_->At(4));
   for (int i{}; i < 100; ++i) {
     auto x = ((f->GetParameter(1) - 0.03) + (i * samplingStep_));
     g->SetPoint(i, x, gRandom->Gaus(f->Eval(x), ySmearing_));
   }
 
+  // fit funzione lista[5]
   TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
+
+  // costruzione toyMC lista [6][7][8]
   for (int i{}; i < nToys_; ++i) {
     g->Set(0);
     for (int j = 0; j < 100; ++j) {
       auto x = gRandom->Uniform(f->GetParameter(1) - 0.03,
                                 f->GetParameter(1) + 0.03);
-      g->SetPoint(j, x, f->Eval(x));
+      // g->SetPoint(j, x, f->Eval(x));  // perché no rumore statistico (error)?
+      // g->SetPointError(j, 0.0, yError_);
+
+      double ytrue = f->Eval(x);
+      double sigmaY = yError_;
+      double ymeas = gRandom->Gaus(ytrue, sigmaY);  // aggiungi rumore
+      g->SetPoint(j, x, ymeas);
+      g->SetPointError(j, 0.0, sigmaY);  // errore coerente al rumore
     }
     Analyse();
     TH1F *h[3];
-    h[0] = static_cast<TH1F *>(objList_->At(5));
-    h[1] = static_cast<TH1F *>(objList_->At(6));
-    h[2] = static_cast<TH1F *>(objList_->At(7));
+    h[0] = static_cast<TH1F *>(objList_->At(6));
+    h[1] = static_cast<TH1F *>(objList_->At(7));
+    h[2] = static_cast<TH1F *>(objList_->At(8));
     double pull_1 =
         (funcFit->GetParameter(1) - 0.057) / (funcFit->GetParError(1));
     double pull_3 =
@@ -123,18 +137,23 @@ void myClass::Analyse() {
                          500);       // d, x0, L, lamda, I
   funcFit->FixParameter(0, 0.0001);  // d
   funcFit->FixParameter(2, 1);       // L
+  // funcFit->FixParameter(4, 500);     // I
 
   for (int i{}; i < 5; ++i) {
     std::cout << "Parameter " << i << ": " << funcFit->GetParameter(i) << "+/-"
               << funcFit->GetParError(i) << '\n';
   }
+
+  TFitResultPtr r = g->Fit(funcFit, "ESRM");
+
+  // stampe varie
   std::cout << "ChiSquare: " << funcFit->GetChisquare() << '\n';
   std::cout << "NDF: " << funcFit->GetNDF() << '\n';
   std::cout << "Reduced ChiSquare: "
             << funcFit->GetChisquare() / funcFit->GetNDF() << '\n';
   std::cout << "Probability: " << funcFit->GetProb() << '\n';
 
-  TFitResultPtr r = g->Fit(funcFit, "ESRM");
+  // matrici
   std::cout << "Correlation matrix:" << '\n';
   TMatrixD cor = r->GetCorrelationMatrix();
   cor.Print();

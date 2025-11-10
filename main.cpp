@@ -38,7 +38,7 @@ void main_module() {
   obj.set_nToys(100);
   obj.set_samplingStep(0.0006);
   obj.set_ySmearing(1);
-  obj.set_yError(1);
+  obj.set_yError(1);  // yError non viene mai usato
 
   TF1 *fDif = new TF1("funcDiffraction", myFunction, x0 - 0.03, x0 + 0.03, 5);
   fDif->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lamda, I
@@ -47,8 +47,7 @@ void main_module() {
   TH1F *h[3];
   TString n[3] = {"1", "2", "3"};
   for (int i{}; i < 3; ++i) {
-    h[i] = new TH1F("h" + names[i], "Histo " + names[i], 100, x0 - 0.03,
-                    x0 + 0.03);
+    h[i] = new TH1F("h" + n[i], "Histo " + n[i], 100, x0 - 0.03, x0 + 0.03);
     alist->Add(h[i]);
   }
 
@@ -62,7 +61,9 @@ void main_module() {
   TH1F *k[3];
   TString m[3] = {"1", "3", "4"};
   for (int i{}; i < 3; ++i) {
-    k[i] = new TH1F("par" + m[i], "Pull " + m[i], 100, x0 - 0.03, x0 + 0.03);
+    //  k[i] = new TH1F("par" + m[i], "Pull " + m[i], 100, x0 - 0.03, x0 +
+    //  0.03);
+    k[i] = new TH1F("par" + m[i], "Pull " + m[i], 100, -5, 5);
     alist->Add(k[i]);
   }
   obj.Generate();
