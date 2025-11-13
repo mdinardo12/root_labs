@@ -45,7 +45,7 @@ void main_module() {
   obj.set_yError(1); 
 
   TF1 *fDif = new TF1("funcDiffraction", myFunction, x0 - 0.03, x0 + 0.03, 5);
-  fDif->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lamda, I
+  fDif->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lambda, I
   alist->Add(fDif);
 
   TH1F *h[3];
@@ -59,7 +59,7 @@ void main_module() {
   alist->Add(graph);
 
   TF1 *fFit = new TF1("funcFit", myFunction, x0 - 0.03, x0 + 0.03, 5);
-  fFit->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lamda, I
+  fFit->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lambda, I
   alist->Add(fFit);
 
   /*TH1F *k[3];
@@ -69,8 +69,8 @@ void main_module() {
     alist->Add(k[i]);
   }*/
 
-  TH1F *hlambda= new TH1F("hlambda", "Lambda", 100, 630E-9, 635E-9);
-  alist->Add(hlambda);
+  TH1F *hLambda= new TH1F("hLambda", "Lambda", 100, 630E-9, 635E-9);
+  alist->Add(hLambda);
   obj.Generate();
   //obj.Analyse();
   obj.Draw();
