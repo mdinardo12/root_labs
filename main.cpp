@@ -3,9 +3,9 @@
 #include <TH1.h>
 #include <TMath.h>
 #include <TROOT.h>
+#include <TRandom.h>
 #include <TString.h>
 #include <TStyle.h>
-#include <TRandom.h>
 
 #include "myClass.hpp"
 
@@ -25,7 +25,7 @@ double myFunction(double *x, double *par) {
   if (TMath::Abs(alpha) < 1.E-9) {
     alpha = 1.E-9;
   }
-  double val = (par[4] * std::pow((std::sin(alpha) / alpha), 2)) /*+ par[5]*/;
+  double val = (par[4] * std::pow((std::sin(alpha) / alpha), 2)) + par[5];
   return val;
 }
 
@@ -39,13 +39,13 @@ void main_module() {
   TList *alist = new TList();
   myClass obj(alist);
   obj.set_nGen(1E6);
-  obj.set_nToys(1000);
+  obj.set_nToys(1);
   obj.set_samplingStep(0.0006);
   obj.set_ySmearing(1);
   obj.set_yError(1);
 
-  TF1 *fDif = new TF1("funcDiffraction", myFunction, x0 - 0.03, x0 + 0.03, 5);
-  fDif->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lambda, I, R
+  TF1 *fDif = new TF1("funcDiffraction", myFunction, x0 - 0.03, x0 + 0.03, 6);
+  fDif->SetParameters(d, x0, L, 632.8E-9, 500, 250);  // d, x0, L, lambda, I, R
   alist->Add(fDif);
 
   TH1F *h[3];
@@ -58,8 +58,8 @@ void main_module() {
   TGraphErrors *graph = new TGraphErrors();
   alist->Add(graph);
 
-  TF1 *fFit = new TF1("funcFit", myFunction, x0 - 0.03, x0 + 0.03, 5);
-  fFit->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lambda, I, R
+  TF1 *fFit = new TF1("funcFit", myFunction, x0 - 0.03, x0 + 0.03, 6);
+  fFit->SetParameters(d, x0, L, 632.8E-9, 500, 250);  // d, x0, L, lambda, I, R
   alist->Add(fFit);
 
   /*TH1F *k[3];
@@ -69,13 +69,13 @@ void main_module() {
     alist->Add(k[i]);
   }*/
 
-  TH1F *hLambda = new TH1F("hLambda", "Lambda", 100, 630E-9, 635E-9);
-  alist->Add(hLambda);
+  // TH1F *hLambda = new TH1F("hLambda", "Lambda", 100, 630E-9, 635E-9);
+  // alist->Add(hLambda);
   obj.Generate();
   for (int i = 0; i < obj.get_nToys(); ++i) {
     fFit->FixParameter(2, gRandom->Uniform(1 - 0.001, 1 + 0.001));
     obj.Analyse();
-    hLambda->Fill(fFit->GetParameter(3));
+    // hLambda->Fill(fFit->GetParameter(3));
   }
   obj.Draw();
 }
