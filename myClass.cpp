@@ -47,7 +47,7 @@ void myClass::Generate() {
   gBenchmark->Stop("Hit or Miss");
   gBenchmark->Show("Hit or Miss");
 
-  // grapherrors lista[4]
+  
   TGraphErrors *g = static_cast<TGraphErrors *>(objList_->At(4));
   for (int i{}; i < 100; ++i) {
     auto x = ((f->GetParameter(1) - 0.03) + (i * samplingStep_));
@@ -55,27 +55,21 @@ void myClass::Generate() {
     g->SetPointError(i, 0, yError_);
   }
 
-  // fit funzione lista[5]
-  TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
-  TH1F *h = static_cast<TH1F *>(objList_->At(6));
-  // costruzione toyMC lista [6][7][8]
-  for (int i{}; i < nToys_; ++i) {
-    g->Set(0);
-    funcFit->FixParameter(2, gRandom->Uniform(1 - 0.001, 1 + 0.001));
-    for (int j{}; j < 100; ++j) {
+  //TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
+  //TH1F *h = static_cast<TH1F *>(objList_->At(6));
+  //for (int i{}; i < nToys_; ++i) {
+    /*for (int j{}; j < 100; ++j) {
       auto x = gRandom->Uniform(f->GetParameter(1) - 0.03,
                                 f->GetParameter(1) + 0.03);
-      // g->SetPoint(j, x, f->Eval(x));  // perché no rumore statistico (error)?
-      // g->SetPointError(j, 0.0, yError_);
 
       double ytrue = f->Eval(x);
       double sigmaY = yError_;
       double ymeas = gRandom->Gaus(ytrue, sigmaY);  // aggiungi rumore
       g->SetPoint(j, x, ymeas);
       g->SetPointError(j, 0.0, sigmaY);  // errore coerente al rumore
-    }
-    h->Fill(funcFit->GetParameter(3));
-    Analyse();
+    }*/
+    //h->Fill(funcFit->GetParameter(3));
+    //Analyse();
 
     /*TH1F *h[3];
     h[0] = static_cast<TH1F *>(objList_->At(6));
@@ -88,8 +82,8 @@ void myClass::Generate() {
     auto pull_4 = (funcFit->GetParameter(4) - 500) / (funcFit->GetParError(4));
     h[0]->Fill(pull_1);
     h[1]->Fill(pull_3);
-    h[2]->Fill(pull_4);*/
-  }
+    h[2]->Fill(pull_4);
+  }*/
 }
 
 void myClass::Draw() {
@@ -131,7 +125,6 @@ void myClass::Draw() {
     }
   }
   c->Update();
-  // c->Print("Graphics.png");
 }
 
 void myClass::Analyse() {
@@ -148,7 +141,7 @@ void myClass::Analyse() {
   std::cout << "Reduced ChiSquare: "
             << funcFit->GetChisquare() / funcFit->GetNDF() << '\n';
   std::cout << "Probability: " << funcFit->GetProb() << '\n';
-  for (int i{}; i < 5; ++i) {
+  for (int i{}; i < 6; ++i) {
     std::cout << "Parameter " << i << ": " << funcFit->GetParameter(i) << "+/-"
               << funcFit->GetParError(i) << '\n';
   }
