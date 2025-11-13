@@ -52,14 +52,16 @@ void myClass::Generate() {
   for (int i{}; i < 100; ++i) {
     auto x = ((f->GetParameter(1) - 0.03) + (i * samplingStep_));
     g->SetPoint(i, x, gRandom->Gaus(f->Eval(x), ySmearing_));
+    g->SetPointError(i, 0, yError_);
   }
 
   // fit funzione lista[5]
   TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
-
+  TH1F *h = static_cast<TH1F *>(objList_->At(6));
   // costruzione toyMC lista [6][7][8]
   for (int i{}; i < nToys_; ++i) {
     g->Set(0);
+    funcFit->FixParameter(2, gRandom->Uniform(1 - 0.001, 1 + 0.001));
     for (int j{}; j < 100; ++j) {
       auto x = gRandom->Uniform(f->GetParameter(1) - 0.03,
                                 f->GetParameter(1) + 0.03);
@@ -72,8 +74,10 @@ void myClass::Generate() {
       g->SetPoint(j, x, ymeas);
       g->SetPointError(j, 0.0, sigmaY);  // errore coerente al rumore
     }
+    h->Fill(funcFit->GetParameter(3));
     Analyse();
-    TH1F *h[3];
+
+    /*TH1F *h[3];
     h[0] = static_cast<TH1F *>(objList_->At(6));
     h[1] = static_cast<TH1F *>(objList_->At(7));
     h[2] = static_cast<TH1F *>(objList_->At(8));
@@ -84,7 +88,7 @@ void myClass::Generate() {
     auto pull_4 = (funcFit->GetParameter(4) - 500) / (funcFit->GetParError(4));
     h[0]->Fill(pull_1);
     h[1]->Fill(pull_3);
-    h[2]->Fill(pull_4);
+    h[2]->Fill(pull_4);*/
   }
 }
 
@@ -92,6 +96,9 @@ void myClass::Draw() {
   TCanvas *c = new TCanvas("c", "Diffraction", 10, 20, 800, 600);
   c->Divide(5, 2);
   for (int i{}; i < (objList_->GetEntries()); ++i) {
+    if(i==5){
+      continue;
+    }
     c->cd(i + 1);
     if (objList_->At(i)->InheritsFrom("TH1F")) {
       TH1F *h = static_cast<TH1F *>(objList_->At(i));
@@ -132,18 +139,8 @@ void myClass::Analyse() {
 
   TGraphErrors *g = static_cast<TGraphErrors *>(objList_->At(4));
   TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
-  funcFit->SetParameters(0.0001, 0.057, 1, 632.8E-9,
-                         500);       // d, x0, L, lamda, I
-  funcFit->FixParameter(0, 0.0001);  // d
-  funcFit->FixParameter(2, 1);       // L
-  // funcFit->FixParameter(4, 500);     // I
 
-  for (int i{}; i < 5; ++i) {
-    std::cout << "Parameter " << i << ": " << funcFit->GetParameter(i) << "+/-"
-              << funcFit->GetParError(i) << '\n';
-  }
-
-  TFitResultPtr r = g->Fit(funcFit, "ESRM");
+  TFitResultPtr r = g->Fit(funcFit, "ESR");
 
   // stampe varie
   std::cout << "ChiSquare: " << funcFit->GetChisquare() << '\n';
@@ -151,6 +148,10 @@ void myClass::Analyse() {
   std::cout << "Reduced ChiSquare: "
             << funcFit->GetChisquare() / funcFit->GetNDF() << '\n';
   std::cout << "Probability: " << funcFit->GetProb() << '\n';
+  for (int i{}; i < 5; ++i) {
+    std::cout << "Parameter " << i << ": " << funcFit->GetParameter(i) << "+/-"
+              << funcFit->GetParError(i) << '\n';
+  }
 
   // matrici
   std::cout << "Correlation matrix:" << '\n';

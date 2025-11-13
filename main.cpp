@@ -20,6 +20,10 @@ double myFunction(double *x, double *par) {
   double alpha =
       (TMath::Pi() * par[0] * (xx - par[1])) /
       (std::sqrt(std::pow((xx - par[1]), 2) + std::pow(par[2], 2)) * par[3]);
+
+  if (TMath::Abs(alpha) < 1.E-9) {
+    alpha = 1.E-9;
+  }
   double val = par[4] * std::pow((std::sin(alpha) / alpha), 2);
   return val;
 }
@@ -35,10 +39,10 @@ void main_module() {
   myClass obj(alist);
   // obj.set_List(alist);
   obj.set_nGen(1E6);
-  obj.set_nToys(100);
+  obj.set_nToys(1000);
   obj.set_samplingStep(0.0006);
   obj.set_ySmearing(1);
-  obj.set_yError(1);  // yError non viene mai usato
+  obj.set_yError(1); 
 
   TF1 *fDif = new TF1("funcDiffraction", myFunction, x0 - 0.03, x0 + 0.03, 5);
   fDif->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lamda, I
@@ -58,15 +62,16 @@ void main_module() {
   fFit->SetParameters(d, x0, L, 632.8E-9, 500);  // d, x0, L, lamda, I
   alist->Add(fFit);
 
-  TH1F *k[3];
+  /*TH1F *k[3];
   TString m[3] = {"1", "3", "4"};
   for (int i{}; i < 3; ++i) {
-    //  k[i] = new TH1F("par" + m[i], "Pull " + m[i], 100, x0 - 0.03, x0 +
-    //  0.03);
     k[i] = new TH1F("par" + m[i], "Pull " + m[i], 100, -5, 5);
     alist->Add(k[i]);
-  }
+  }*/
+
+  TH1F *hlambda= new TH1F("hlambda", "Lambda", 100, 630E-9, 635E-9);
+  alist->Add(hlambda);
   obj.Generate();
-  // obj.Analyse();
+  //obj.Analyse();
   obj.Draw();
 }
