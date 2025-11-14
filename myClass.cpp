@@ -48,12 +48,12 @@ void myClass::Generate() {
   gBenchmark->Show("Hit or Miss");
 
   
-  TGraphErrors *g = static_cast<TGraphErrors *>(objList_->At(4));
-  for (int i{}; i < 100; ++i) {
+  //TGraphErrors *g = static_cast<TGraphErrors *>(objList_->At(4));
+  /*for (int i{}; i < 100; ++i) {
     auto x = ((f->GetParameter(1) - 0.03) + (i * samplingStep_));
     g->SetPoint(i, x, gRandom->Gaus(f->Eval(x), ySmearing_));
     g->SetPointError(i, 0, yError_);
-  }
+  }*/
 
   //TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
   //TH1F *h = static_cast<TH1F *>(objList_->At(6));
@@ -90,9 +90,6 @@ void myClass::Draw() {
   TCanvas *c = new TCanvas("c", "Diffraction", 10, 20, 800, 600);
   c->Divide(5, 2);
   for (int i{}; i < (objList_->GetEntries()); ++i) {
-    if(i==5){
-      continue;
-    }
     c->cd(i + 1);
     if (objList_->At(i)->InheritsFrom("TH1F")) {
       TH1F *h = static_cast<TH1F *>(objList_->At(i));

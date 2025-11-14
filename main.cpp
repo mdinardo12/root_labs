@@ -55,7 +55,7 @@ void main_module() {
     alist->Add(h[i]);
   }
 
-  TGraphErrors *graph = new TGraphErrors();
+  TGraphErrors *graph = new TGraphErrors("centrale60.txt", "%lg%lg%lg");
   alist->Add(graph);
 
   TF1 *fFit = new TF1("funcFit", myFunction, x0 - 0.03, x0 + 0.03, 6);
