@@ -14,14 +14,14 @@
 #include <iostream>
 
 void myClass::Generate() {
-  // primo istogramma lista[1]
+  // [1]: first histogram
   TH1F *h1 = static_cast<TH1F *>(objList_->At(1));
   gBenchmark->Start("TH1::FillRandom");
   h1->FillRandom(objList_->At(0)->GetName(), nGen_);
   gBenchmark->Stop("TH1::FillRandom");
   gBenchmark->Show("TH1::FillRandom");
 
-  // secondo istogramma lista[2]
+  // [2]: second histogram
   TF1 *f = static_cast<TF1 *>(objList_->At(0));
   TH1F *h2 = static_cast<TH1F *>(objList_->At(2));
   gBenchmark->Start("TF1::GetRandom");
@@ -31,7 +31,7 @@ void myClass::Generate() {
   gBenchmark->Stop("TF1::GetRandom");
   gBenchmark->Show("TF1::GetRandom");
 
-  // terza istogramma lista[3]
+  // [3]: third histogram
   TH1F *h3 = static_cast<TH1F *>(objList_->At(3));
   int points{};
   auto fmax = f->GetMaximum(f->GetXmin(), f->GetXmax());
@@ -47,43 +47,42 @@ void myClass::Generate() {
   gBenchmark->Stop("Hit or Miss");
   gBenchmark->Show("Hit or Miss");
 
-  
-  //TGraphErrors *g = static_cast<TGraphErrors *>(objList_->At(4));
+  // TGraphErrors *g = static_cast<TGraphErrors *>(objList_->At(4));
   /*for (int i{}; i < 100; ++i) {
     auto x = ((f->GetParameter(1) - 0.03) + (i * samplingStep_));
     g->SetPoint(i, x, gRandom->Gaus(f->Eval(x), ySmearing_));
     g->SetPointError(i, 0, yError_);
   }*/
 
-  //TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
-  //TH1F *h = static_cast<TH1F *>(objList_->At(6));
-  //for (int i{}; i < nToys_; ++i) {
-    /*for (int j{}; j < 100; ++j) {
-      auto x = gRandom->Uniform(f->GetParameter(1) - 0.03,
-                                f->GetParameter(1) + 0.03);
+  // TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
+  // TH1F *h = static_cast<TH1F *>(objList_->At(6));
+  // for (int i{}; i < nToys_; ++i) {
+  /*for (int j{}; j < 100; ++j) {
+    auto x = gRandom->Uniform(f->GetParameter(1) - 0.03,
+                              f->GetParameter(1) + 0.03);
 
-      double ytrue = f->Eval(x);
-      double sigmaY = yError_;
-      double ymeas = gRandom->Gaus(ytrue, sigmaY);  // aggiungi rumore
-      g->SetPoint(j, x, ymeas);
-      g->SetPointError(j, 0.0, sigmaY);  // errore coerente al rumore
-    }*/
-    //h->Fill(funcFit->GetParameter(3));
-    //Analyse();
-
-    /*TH1F *h[3];
-    h[0] = static_cast<TH1F *>(objList_->At(6));
-    h[1] = static_cast<TH1F *>(objList_->At(7));
-    h[2] = static_cast<TH1F *>(objList_->At(8));
-    auto pull_1 =
-        (funcFit->GetParameter(1) - 0.057) / (funcFit->GetParError(1));
-    auto pull_3 =
-        (funcFit->GetParameter(3) - 632.8E-9) / (funcFit->GetParError(3));
-    auto pull_4 = (funcFit->GetParameter(4) - 500) / (funcFit->GetParError(4));
-    h[0]->Fill(pull_1);
-    h[1]->Fill(pull_3);
-    h[2]->Fill(pull_4);
+    double ytrue = f->Eval(x);
+    double sigmaY = yError_;
+    double ymeas = gRandom->Gaus(ytrue, sigmaY);  // aggiungi rumore
+    g->SetPoint(j, x, ymeas);
+    g->SetPointError(j, 0.0, sigmaY);  // errore coerente al rumore
   }*/
+  // h->Fill(funcFit->GetParameter(3));
+  // Analyse();
+
+  /*TH1F *h[3];
+  h[0] = static_cast<TH1F *>(objList_->At(6));
+  h[1] = static_cast<TH1F *>(objList_->At(7));
+  h[2] = static_cast<TH1F *>(objList_->At(8));
+  auto pull_1 =
+      (funcFit->GetParameter(1) - 0.057) / (funcFit->GetParError(1));
+  auto pull_3 =
+      (funcFit->GetParameter(3) - 632.8E-9) / (funcFit->GetParError(3));
+  auto pull_4 = (funcFit->GetParameter(4) - 500) / (funcFit->GetParError(4));
+  h[0]->Fill(pull_1);
+  h[1]->Fill(pull_3);
+  h[2]->Fill(pull_4);
+}*/
 }
 
 void myClass::Draw() {
@@ -122,6 +121,7 @@ void myClass::Draw() {
     }
   }
   c->Update();
+  // c->Print("Diffraction.png");
 }
 
 void myClass::Analyse() {
@@ -129,28 +129,26 @@ void myClass::Analyse() {
 
   TGraphErrors *g = static_cast<TGraphErrors *>(objList_->At(4));
   TF1 *funcFit = static_cast<TF1 *>(objList_->At(5));
+  funcFit->SetParName(0, "d");       // slit width
+  funcFit->SetParName(1, "x0");      // peak position
+  funcFit->SetParName(2, "L");       // slit-screen distance
+  funcFit->SetParName(3, "lambda");  // wavelength
+  funcFit->SetParName(4, "I");       // intensity
+  funcFit->SetParName(5, "B");       // background
 
   TFitResultPtr r = g->Fit(funcFit, "ESR");
+  std::cout << std::endl;
 
-  // stampe varie
-  std::cout << "ChiSquare: " << funcFit->GetChisquare() << '\n';
-  std::cout << "NDF: " << funcFit->GetNDF() << '\n';
-  std::cout << "Reduced ChiSquare: "
-            << funcFit->GetChisquare() / funcFit->GetNDF() << '\n';
-  std::cout << "Probability: " << funcFit->GetProb() << '\n';
-  for (int i{}; i < 6; ++i) {
-    std::cout << "Parameter " << i << ": " << funcFit->GetParameter(i) << "+/-"
-              << funcFit->GetParError(i) << '\n';
-  }
+  // default statistics printing
 
-  // matrici
-  std::cout << "Correlation matrix:" << '\n';
+  // matrix printing
+  std::cout << "Correlation matrix:";
   TMatrixD cor = r->GetCorrelationMatrix();
   cor.Print();
-  std::cout << "Covariance matrix:" << '\n';
+  std::cout << "Covariance matrix:";
   TMatrixD cov = r->GetCovarianceMatrix();
   cov.Print();
-  std::cout << "Hessian matrix:" << '\n';
+  std::cout << "Hessian matrix:";
   TMatrixD hess = cov.Invert();
   hess.Print();
 

@@ -20,32 +20,33 @@ double myFunction(double *x, double *par) {
   double xx = x[0];
   double alpha =
       (TMath::Pi() * par[0] * (xx - par[1])) /
-      (std::sqrt(std::pow((xx - par[1]), 2) + std::pow(par[2], 2)) * par[3]);
+      (TMath::Sqrt(TMath::Power((xx - par[1]), 2) + TMath::Power(par[2], 2)) *
+       par[3]);
 
   if (TMath::Abs(alpha) < 1.E-9) {
     alpha = 1.E-9;
   }
-  double val = (par[4] * std::pow((std::sin(alpha) / alpha), 2)) + par[5];
+  double val = (par[4] * TMath::Power((TMath::Sin(alpha) / alpha), 2)) + par[5];
   return val;
 }
 
 void main_module() {
   setStyle();
 
-  const double d{6E-5};  // slit width
+  const double d{6.E-5};   // slit width
+  const double x0{0.064};  // peak position
   const double L{1.};      // slit-screen distance
-  const double x0{0.064};  // peak intensity position
 
   TList *alist = new TList();
   myClass obj(alist);
   obj.set_nGen(1E6);
   obj.set_nToys(1);
   obj.set_samplingStep(0.0006);
-  obj.set_ySmearing(1);
-  obj.set_yError(1);
+  obj.set_ySmearing(1.);
+  obj.set_yError(1.);
 
   TF1 *fDif = new TF1("funcDiffraction", myFunction, x0 - 0.03, x0 + 0.03, 6);
-  fDif->SetParameters(d, x0, L, 632.8E-9, 0.770, 0);  // d, x0, L, lambda, I, R
+  fDif->SetParameters(d, x0, L, 632.8E-9, 0.770, 0.);  // d, x0, L, lambda, I, B
   alist->Add(fDif);
 
   TH1F *h[3];
@@ -59,7 +60,10 @@ void main_module() {
   alist->Add(graph);
 
   TF1 *fFit = new TF1("funcFit", myFunction, x0 - 0.03, x0 + 0.03, 6);
-  fFit->SetParameters(d, x0, L, 632.8E-9, 0.770, 0);  // d, x0, L, lambda, I, R
+  fFit->SetParameters(d, x0, L, 632.8E-9, 0.770, 0.);  // d, x0, L, lambda, I, B
+  fFit->FixParameter(0, d);
+  fFit->FixParameter(1, x0);
+  fFit->FixParameter(2, L);
   alist->Add(fFit);
 
   /*TH1F *k[3];
@@ -72,10 +76,11 @@ void main_module() {
   // TH1F *hLambda = new TH1F("hLambda", "Lambda", 100, 630E-9, 635E-9);
   // alist->Add(hLambda);
   obj.Generate();
-  //for (int i = 0; i < obj.get_nToys(); ++i) {
-    fFit->FixParameter(2, 1);
-    obj.Analyse();
-    // hLambda->Fill(fFit->GetParameter(3));
- //}
+  // for (int i = 0; i < obj.get_nToys(); ++i) {
+  // fFit->FixParameter();
+  // fFit->SetParameter();
+  obj.Analyse();
+  // hLambda->Fill(fFit->GetParameter(3));
+  //}
   obj.Draw();
 }
