@@ -32,9 +32,9 @@ double myFunction(double *x, double *par) {
 void main_module() {
   setStyle();
 
-  const double d{0.0001};  // slit width
+  const double d{6E-5};  // slit width
   const double L{1.};      // slit-screen distance
-  const double x0{0.057};  // peak intensity position
+  const double x0{0.064};  // peak intensity position
 
   TList *alist = new TList();
   myClass obj(alist);
@@ -45,7 +45,7 @@ void main_module() {
   obj.set_yError(1);
 
   TF1 *fDif = new TF1("funcDiffraction", myFunction, x0 - 0.03, x0 + 0.03, 6);
-  fDif->SetParameters(d, x0, L, 632.8E-9, 500, 250);  // d, x0, L, lambda, I, R
+  fDif->SetParameters(d, x0, L, 632.8E-9, 0.770, 0);  // d, x0, L, lambda, I, R
   alist->Add(fDif);
 
   TH1F *h[3];
@@ -59,7 +59,7 @@ void main_module() {
   alist->Add(graph);
 
   TF1 *fFit = new TF1("funcFit", myFunction, x0 - 0.03, x0 + 0.03, 6);
-  fFit->SetParameters(d, x0, L, 632.8E-9, 500, 250);  // d, x0, L, lambda, I, R
+  fFit->SetParameters(d, x0, L, 632.8E-9, 0.770, 0);  // d, x0, L, lambda, I, R
   alist->Add(fFit);
 
   /*TH1F *k[3];
@@ -72,10 +72,10 @@ void main_module() {
   // TH1F *hLambda = new TH1F("hLambda", "Lambda", 100, 630E-9, 635E-9);
   // alist->Add(hLambda);
   obj.Generate();
-  for (int i = 0; i < obj.get_nToys(); ++i) {
-    fFit->FixParameter(2, gRandom->Uniform(1 - 0.001, 1 + 0.001));
+  //for (int i = 0; i < obj.get_nToys(); ++i) {
+    fFit->FixParameter(2, 1);
     obj.Analyse();
     // hLambda->Fill(fFit->GetParameter(3));
-  }
+ //}
   obj.Draw();
 }
